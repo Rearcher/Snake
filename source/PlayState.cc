@@ -6,10 +6,16 @@
 const std::string PlayState::s_playID = "PLAY";
 
 void PlayState::update() {
-	// pause state
+	if (TheInputHandler::Instance()->isKeyDown(SDL_SCANCODE_ESCAPE)) {
+		TheGame::Instance()->getStateMachine()->pushState(new PauseState());
+	}
+
 	for (auto gameObject : m_gameObjects)
 		gameObject->update();
 
+	if (m_gameObjects.size() > 0 && checkBorderCollision(dynamic_cast<SDLGameObject*>(m_gameObjects[0]))) {
+		TheGame::Instance()->getStateMachine()->pushState(new GameOverState());
+	}
 }
 
 void PlayState::render() {
@@ -49,5 +55,28 @@ bool PlayState::onExit() {
 
 void PlayState::resume() {
 
+}
+
+bool PlayState::checkBorderCollision(SDLGameObject *p1) {
+	int left, right, top, bottom;
+	int left_margin, right_margin, top_margin, bottom_margin;
+
+	left = p1->getPosition().getX();
+	right = p1->getPosition().getX() + p1->getWidth();
+	top = p1->getPosition().getY();
+	bottom = p1->getPosition().getY() + p1->getHeight();
+
+	left_margin = 0;
+	right_margin = TheGame::Instance()->getWidth();
+	top_margin = 0;
+	bottom_margin = TheGame::Instance()->getHeight();
+
+
+	if (left <= left_margin) return true;
+	if (right >= right_margin) return true;
+	if (top <= top_margin) return true;
+	if (bottom >= bottom_margin) return true;
+
+	return false;
 }
 

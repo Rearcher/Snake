@@ -8,6 +8,8 @@
 #include "GameObject.h"
 #include "MenuState.h"
 #include "PlayState.h"
+#include "PauseState.h"
+#include "GameOverState.h"
 
 #include <iostream>
 #include <vector>
@@ -46,6 +48,10 @@ public:
 	GameStateMachine *getStateMachine() {
 		return m_pGameStateMachine;
 	}
+
+	int getWidth() { return m_Width; }
+	int getHeight() { return m_Height; }
+
 private:
 	Game() {}
 	~Game() {}
@@ -59,7 +65,8 @@ private:
 
 	bool m_bRunning;
 	int m_currentFrame;
-
+	
+	int m_Width, m_Height;
 	static Game *s_pInstance;
 
 	std::vector<GameObject*> m_gameObjects;

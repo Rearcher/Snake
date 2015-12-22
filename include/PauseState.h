@@ -1,31 +1,34 @@
-#ifndef _PlayState_
-#define _PlayState_
+#ifndef _PauseState_
+#define _PauseState_
 
-#include "SDLGameObject.h"
 #include "GameState.h"
+#include "GameObject.h"
+#include <string>
 #include <vector>
 
-class PlayState : public GameState {
+class PauseState : public GameState {
 public:
-
+	
 	virtual void update();
 	virtual void render();
-	
+
 	virtual bool onEnter();
 	virtual bool onExit();
-	
+
 	virtual void resume();
 
 	virtual std::string getStateID() const {
-		return s_playID;
+		return s_pauseID;
 	}
-
-	bool checkBorderCollision(SDLGameObject *p1);
 
 private:
 
-	static const std::string s_playID;
+	static void s_pauseToMain();
+	static void s_resumePlay();
+
+	static const std::string s_pauseID;
+
 	std::vector<GameObject*> m_gameObjects;
 };
 
-#endif /* PlayState */
+#endif /* PauseState */

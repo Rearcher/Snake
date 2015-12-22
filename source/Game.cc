@@ -28,6 +28,9 @@ bool Game::init(const char *title, int xpos, int ypos, int width,
 		std::cout << "SDL init fail\n";
 		return false;
 	}
+	
+	m_Width = width;
+	m_Height = height;
 
 	std::cout << "init success\n";
 	m_bRunning = true;
