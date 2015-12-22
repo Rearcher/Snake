@@ -35,6 +35,7 @@ bool Game::init(const char *title, int xpos, int ypos, int width,
 	// InputHandler init
 	// GameStateMachine init
 	m_pGameStateMachine = new GameStateMachine();
+	m_pGameStateMachine->changeState(new MenuState());
 	// TextureManager init
 	return true;
 }

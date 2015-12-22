@@ -6,6 +6,8 @@
 #include "InputHandler.h"
 #include "GameStateMachine.h"
 #include "GameObject.h"
+#include "MenuState.h"
+#include "PlayState.h"
 
 #include <iostream>
 #include <vector>
