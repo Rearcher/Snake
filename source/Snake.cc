@@ -4,7 +4,7 @@
 
 std::vector<TurnPoint> Snake::m_turnPoints = {};
 bool Snake::m_hasBody = false;
-float Snake::m_speed = 1.5;
+float Snake::m_speed = 1.0;
 
 void Snake::load(const LoaderParams *pParams) {
 	SDLGameObject::load(pParams);

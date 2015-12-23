@@ -69,9 +69,9 @@ bool PlayState::onEnter() {
 	body1->load(new LoaderParams(67, 100, body_size, body_size, "snake", 1));
 	body2->load(new LoaderParams(34, 100, body_size, body_size, "snake", 1));
 	body3->load(new LoaderParams(1, 100, body_size, body_size, "snake", 1));
-	m_body.push_back(body1);
-	m_body.push_back(body2);
-	m_body.push_back(body3);
+//	m_body.push_back(body1);
+//	m_body.push_back(body2);
+//	m_body.push_back(body3);
 	
 	if (m_body.size() > 0)
 		Snake::setBodyFlag(true);
@@ -189,37 +189,59 @@ void PlayState::produceFood() {
 void PlayState::bodyIncrease() {
 	if (bodyCollision(dynamic_cast<SDLGameObject*>(m_head), 
 				dynamic_cast<SDLGameObject*>(m_food))) {
-		int x, y;
+		int x, y, turnindex;
 		Vector2D pos, vel;
 		
 		if (m_body.empty()) { // no body yet
 			pos = m_head->getPosition();
 			vel = m_head->getVelocity();
+			turnindex = m_head->getNumTurnPoints();
+
+			std::cout << "turn points: " << m_head->getNumTurnPoints() << "\n";
 
 		} else {			  // already has some body
 			pos = m_body.back()->getPosition();
-			vel = m_body.back()->getPosition();
+			vel = m_body.back()->getVelocity();
+			turnindex = m_body.back()->getTurnIndex();
 		}
+		
+		std::cout << "pos: " << pos.getX() << ", " << pos.getY() << "\n";
+		std::cout << "vel: " << vel.getX() << ", " << vel.getY() << "\n";
 
 		if (vel.getX() > 0 && vel.getY() == 0) {
+			std::cout << "it's going right\n";
 			x = pos.getX() - body_size;
 			y = pos.getY();
 		} else if (vel.getX() < 0 && vel.getY() == 0) {
+			std::cout << "it's going left\n";
 			x = pos.getX() + body_size;
 			y = pos.getY();
 		} else if (vel.getX() == 0 && vel.getY() < 0) {
+			std::cout << "it's going up\n";
 			x = pos.getX();
 			y = pos.getY() + body_size;
 		} else if (vel.getX() == 0 && vel.getY() > 0) {
+			std::cout << "it's going down\n";
 			x = pos.getX();
 			y = pos.getY() - body_size;
 		}
 
 		Snake *body = new Snake();
 		body->load(new LoaderParams(x, y, body_size, body_size, "snake", 1));
+		body->setTurnIndex(turnindex);
+		body->setVelocity(vel);
 		m_body.push_back(body);
-		body->draw();
+
+		std::cout << "turn points: " << Snake::getNumTurnPoints() << "\n";
+		std::cout << "turnindex: " << turnindex << "\n";
+//		body->draw();
+//		body->bodyUpdate();
+//		body->updatePosition();
 		
+		std::cout << "position: " << x << ", " << y << "\n";
+		std::cout << "body increased\n";
+
+
 		if (m_body.size() > 0)
 			Snake::setBodyFlag(true);
 

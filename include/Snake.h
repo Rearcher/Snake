@@ -38,6 +38,9 @@ public:
 		SDLGameObject::update();
 	}
 	
+	int getTurnIndex() { return turnIndex; }
+	void setTurnIndex(int i) { turnIndex = i; }
+
 	static void cleanTurnPoints() {
 		m_turnPoints.clear();
 	}
@@ -47,6 +50,8 @@ public:
 	}
 	
 	static void setSpeed(float s) { m_speed = s; }
+	
+	static int getNumTurnPoints() { return m_turnPoints.size(); }
 
 	void bodyUpdate() {
 		if (m_turnPoints.empty() || turnIndex >= m_turnPoints.size()) 
