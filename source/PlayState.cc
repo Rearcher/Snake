@@ -9,18 +9,28 @@ void PlayState::update() {
 	if (TheInputHandler::Instance()->isKeyDown(SDL_SCANCODE_ESCAPE)) {
 		TheGame::Instance()->getStateMachine()->pushState(new PauseState());
 	}
+	
+	// m_body update
+	m_head->update();
+	
+	// m_body update
+	for (auto body : m_body)
+		body->bodyUpdate();
 
-	for (auto gameObject : m_gameObjects)
-		gameObject->update();
+	for (auto body : m_body)
+		body->updatePosition();
 
-	if (m_gameObjects.size() > 0 && checkBorderCollision(dynamic_cast<SDLGameObject*>(m_gameObjects[0]))) {
+	if (checkBorderCollision(dynamic_cast<SDLGameObject*>(m_head))) {
 		TheGame::Instance()->getStateMachine()->pushState(new GameOverState());
 	}
 }
 
 void PlayState::render() {
-	for (auto gameObject : m_gameObjects)
-		gameObject->draw();
+//	for (auto gameObject : m_gameObjects)
+//		gameObject->draw();
+	m_head->draw();
+	for (auto body : m_body)
+		body->draw();
 }
 
 bool PlayState::onEnter() {
@@ -30,9 +40,20 @@ bool PlayState::onEnter() {
 		return false;
 	}
 
-	GameObject *snake = new Snake();
+	Snake::cleanTurnPoints();
+	
+	Snake *snake = new Snake();
 	snake->load(new LoaderParams(100, 100, 33, 33, "snake", 1));
-	m_gameObjects.push_back(snake);
+	m_head = snake;
+	
+	// add body
+	Snake *body1 = new Snake(), *body2 = new Snake, *body3 = new Snake;
+	body1->load(new LoaderParams(67, 100, 33, 33, "snake", 1));
+	body2->load(new LoaderParams(34, 100, 33, 33, "snake", 1));
+	body3->load(new LoaderParams(1, 100, 33, 33, "snake", 1));
+	m_body.push_back(body1);
+	m_body.push_back(body2);
+	m_body.push_back(body3);
 
 	m_textureIDList.push_back("snake");
 	
@@ -41,13 +62,21 @@ bool PlayState::onEnter() {
 }
 
 bool PlayState::onExit() {
-	for (auto gameObject : m_gameObjects)
-		gameObject->clean();
-	m_gameObjects.clear();
+//	for (auto gameObject : m_gameObjects)
+//		gameObject->clean();
+//	m_gameObjects.clear();
+	
+	m_head->clean();
+	
+	for (auto body : m_body)
+		body->clean();
+	m_body.clear();
 
 	for (auto id : m_textureIDList)
 		TheTextureManager::Instance()->clearFromTextureMap(id);
 	m_textureIDList.clear();
+	
+	Snake::cleanTurnPoints();
 
 	std::cout << "exiting PlayState\n";
 	return true;
@@ -72,10 +101,10 @@ bool PlayState::checkBorderCollision(SDLGameObject *p1) {
 	bottom_margin = TheGame::Instance()->getHeight();
 
 
-	if (left <= left_margin) return true;
-	if (right >= right_margin) return true;
-	if (top <= top_margin) return true;
-	if (bottom >= bottom_margin) return true;
+	if (left < left_margin) return true;
+	if (right > right_margin) return true;
+	if (top < top_margin) return true;
+	if (bottom > bottom_margin) return true;
 
 	return false;
 }

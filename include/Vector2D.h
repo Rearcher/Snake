@@ -49,7 +49,14 @@ public:
         return v1;
     }
 
-    
+	bool operator == (const Vector2D &v2) {
+//		return fabs(m_x-v2.m_x) < 1e-8 
+//			&& fabs(m_y-v2.m_y) < 1e-8;
+		return m_x == v2.m_x 
+			&& m_y == v2.m_y;
+	}
+
+
     Vector2D operator*(float scalar)
     {
         return Vector2D(m_x * scalar, m_y * scalar);

@@ -1,7 +1,7 @@
 #ifndef _PlayState_
 #define _PlayState_
 
-#include "SDLGameObject.h"
+#include "Snake.h"
 #include "GameState.h"
 #include <vector>
 
@@ -25,7 +25,9 @@ public:
 private:
 
 	static const std::string s_playID;
-	std::vector<GameObject*> m_gameObjects;
+
+	Snake *m_head;
+	std::vector<Snake*> m_body;
 };
 
 #endif /* PlayState */
