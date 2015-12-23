@@ -41,6 +41,12 @@ public:
 	static void cleanTurnPoints() {
 		m_turnPoints.clear();
 	}
+	
+	static void setBodyFlag(bool t) {
+		m_hasBody = t;
+	}
+	
+	static void setSpeed(float s) { m_speed = s; }
 
 	void bodyUpdate() {
 		if (m_turnPoints.empty() || turnIndex >= m_turnPoints.size()) 
@@ -57,7 +63,10 @@ private:
 	Vector2D m_lastVelocity;
 	
 	static std::vector<TurnPoint> m_turnPoints;
+	static bool m_hasBody;
 	int turnIndex;
+
+	static float m_speed;
 };
 
 #endif

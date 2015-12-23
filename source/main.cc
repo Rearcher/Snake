@@ -1,11 +1,14 @@
 #include "Game.h"
+#include <cstdlib>
 
 const int FPS = 60;
 const int DELAY_TIME = 1000.0f / FPS;
 
 int main() {
+	srand((int)time(0));
+	
 	Uint32 frameStart, frameTime;
-
+	
 	if (TheGame::Instance()->init("Snake", 100, 100, 640, 480, 0)) {
 		std::cout << "game init success\n";
 		
