@@ -21,18 +21,23 @@ void PlayState::update() {
 
 	for (auto body : m_body)
 		body->updatePosition();
-
+/*
 	if (checkBorderCollision(dynamic_cast<SDLGameObject*>(m_head))) {
-//			checkBodyCollision()) {
 		TheGame::Instance()->getStateMachine()->pushState(new GameOverState());
 	}
-	
+*/	
+	if (checkBorderCollision(dynamic_cast<SDLGameObject*>(m_head)) ||
+			checkBodyCollision()) {
+		TheGame::Instance()->getStateMachine()->pushState(new GameOverState());
+	}
 	// m_food update
 	if (SDL_GetTicks() - foodTime > 15000) {
 		produceFood();
 		foodTime = SDL_GetTicks();
 	}
 	m_food->update();
+	
+	m_map->update();
 }
 
 void PlayState::render() {
@@ -43,6 +48,9 @@ void PlayState::render() {
 		body->draw();
 
 	m_food->draw();
+
+	// draw map
+	m_map->render();
 }
 
 bool PlayState::onEnter() {
@@ -72,7 +80,12 @@ bool PlayState::onEnter() {
 //	m_body.push_back(body1);
 //	m_body.push_back(body2);
 //	m_body.push_back(body3);
-	
+
+	// add map
+	m_map = new Map("assets/map1.txt");
+	if (!m_map->load("assets/blocks1.png", "block"))
+		std::cout << "map load failed\n";
+
 	if (m_body.size() > 0)
 		Snake::setBodyFlag(true);
 	
@@ -135,6 +148,35 @@ bool PlayState::checkBorderCollision(SDLGameObject *p1) {
 	if (top < top_margin) return true;
 	if (bottom > bottom_margin) return true;
 
+	// check map collision
+	Vector2D pos1, pos2;
+	Vector2D head_v = m_head->getVelocity();
+	Vector2D head_pos = m_head->getPosition();
+
+	if (head_v.getX() > 0 && head_v.getY() == 0) {			// head is going right
+		
+		pos1.setPoint((float)(head_pos.getX()+body_size), (float)head_pos.getY());
+		pos2.setPoint((float)(head_pos.getX()+body_size), (float)(head_pos.getY()+body_size));
+	
+	} else if (head_v.getX() < 0 && head_v.getY() == 0) { 	// head is going left
+		
+		pos1 = head_pos;
+		pos2.setPoint((float)(head_pos.getX()), (float)(head_pos.getY()+body_size));
+
+	} else if (head_v.getX() == 0 && head_v.getY() < 0) {  	// head is going up
+		
+		pos1 = head_pos;
+		pos2.setPoint((float)(head_pos.getX()+body_size), (float)head_pos.getY());
+
+	} else if (head_v.getX() == 0 && head_v.getY() > 0) {	// head is going down
+		
+		pos1.setPoint((float)(head_pos.getX()), (float)(head_pos.getY()+body_size));
+		pos2.setPoint((float)(head_pos.getX()+body_size), (float)head_pos.getY()+body_size);
+
+	}
+	if (m_map->isInside(pos1) || m_map->isInside(pos2))
+		return true;
+
 	return false;
 }
 
@@ -164,13 +206,35 @@ bool PlayState::bodyCollision(SDLGameObject *p1, SDLGameObject *p2) {
 }
 
 bool PlayState::checkBodyCollision() {
-	if (m_body.empty()) return false;
+	Vector2D pos1, pos2;
+	Vector2D head_v = m_head->getVelocity();
+	Vector2D head_pos = m_head->getPosition();
 
-	for (auto body : m_body)
-		if (bodyCollision(dynamic_cast<SDLGameObject*>(m_head), 
-					dynamic_cast<SDLGameObject*>(body)))
+	if (head_v.getX() > 0 && head_v.getY() == 0) {			// head is going right
+		
+		pos1.setPoint((float)(head_pos.getX()+body_size), (float)head_pos.getY());
+		pos2.setPoint((float)(head_pos.getX()+body_size), (float)(head_pos.getY()+body_size));
+	
+	} else if (head_v.getX() < 0 && head_v.getY() == 0) { 	// head is going left
+		
+		pos1 = head_pos;
+		pos2.setPoint((float)(head_pos.getX()), (float)(head_pos.getY()+body_size));
+
+	} else if (head_v.getX() == 0 && head_v.getY() < 0) {  	// head is going up
+		
+		pos1 = head_pos;
+		pos2.setPoint((float)(head_pos.getX()+body_size), (float)head_pos.getY());
+
+	} else if (head_v.getX() == 0 && head_v.getY() > 0) {	// head is going down
+		
+		pos1.setPoint((float)(head_pos.getX()), (float)(head_pos.getY()+body_size));
+		pos2.setPoint((float)(head_pos.getX()+body_size), (float)head_pos.getY()+body_size);
+
+	}
+
+	for (unsigned int i = 1; i < m_body.size(); i++)
+		if (m_body[i]->isInside(pos1) || m_body[i]->isInside(pos2))
 			return true;
-
 	return false;
 }
 
@@ -180,6 +244,13 @@ void PlayState::produceFood() {
 
 	int x = rand() % width;
 	int y = rand() % height;
+	
+	Vector2D vec(x, y);
+	while (m_map->isInside(vec) || isInsideBody(vec)) {
+		x = rand() % width;
+		y = rand() % height;
+		vec = Vector2D(x, y);
+	}
 
 	Food *food = new Food();
 	food->load(new LoaderParams(x, y, food_size, food_size, "food", 1));
@@ -248,4 +319,19 @@ void PlayState::bodyIncrease() {
 		produceFood();
 		foodTime = SDL_GetTicks();
 	}
+}
+
+bool PlayState::isInsideBody(Vector2D v) {
+	float x = v.getX();
+	float y = v.getY();
+
+	for (auto body : m_body) {
+		Vector2D pos = body->getPosition();
+
+		if (x > pos.getX() && x < pos.getX()+body_size
+				&& y > pos.getY() && y < pos.getY()+body_size)
+			return true;
+	}
+	
+	return false;
 }

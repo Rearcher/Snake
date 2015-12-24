@@ -10,6 +10,7 @@
 #include "PlayState.h"
 #include "PauseState.h"
 #include "GameOverState.h"
+#include "Map.h"
 
 #include <iostream>
 #include <vector>

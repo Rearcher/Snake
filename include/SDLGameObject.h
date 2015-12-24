@@ -18,6 +18,9 @@ public:
 	Vector2D &getPosition() { return m_position; }
 	int getWidth() { return m_width; }
 	int getHeight() { return m_height; }
+	
+	void setCurrentRow(int x) { m_currentRow = x; }
+	void setCurrentFrame(int x) { m_currentFrame = x; }
 
 protected:
 

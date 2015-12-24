@@ -62,6 +62,17 @@ public:
 			turnIndex++;
 		}
 	}
+
+	bool isInside(Vector2D pos) {
+		float x = pos.getX();
+		float y = pos.getY();
+
+		if (x > m_position.getX() && x < m_position.getX() + m_size
+				&& y > m_position.getY() && y < m_position.getY() + m_size)
+			return true;
+		return false;
+	}
+
 private:
 	
 	void handleInput();
@@ -72,6 +83,7 @@ private:
 	int turnIndex;
 
 	static float m_speed;
+	static int m_size;
 };
 
 #endif

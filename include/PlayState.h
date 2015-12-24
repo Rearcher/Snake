@@ -4,6 +4,7 @@
 #include "Snake.h"
 #include "Food.h"
 #include "GameState.h"
+#include "Map.h"
 #include <vector>
 
 const int body_size = 33;
@@ -30,6 +31,8 @@ public:
 	
 	void produceFood();
 	void bodyIncrease();
+
+	bool isInsideBody(Vector2D);
 private:
 
 	static const std::string s_playID;
@@ -38,8 +41,9 @@ private:
 	std::vector<Snake*> m_body;
 
 	Food *m_food;
-
 	int foodTime;
+
+	Map *m_map;
 };
 
 #endif /* PlayState */
