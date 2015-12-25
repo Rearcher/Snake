@@ -44,6 +44,14 @@ private:
 	int foodTime;
 
 	Map *m_map;
+	std::vector<std::string> m_mapFiles;
+	std::vector<int> m_nextThreshold;
+	
+	std::vector<std::string> m_levelFiles;
+
+	int m_currentLevel;
+
+	bool m_initFlag;
 };
 
 #endif /* PlayState */

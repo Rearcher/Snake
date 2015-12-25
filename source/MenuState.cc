@@ -7,6 +7,10 @@ const std::string MenuState::s_menuID = "MENU";
 void MenuState::update() {
 	for (auto gameObject : m_gameObjects)
 		gameObject->update();
+
+	if (TheInputHandler::Instance()->isKeyDown(SDL_SCANCODE_RETURN)) {
+		TheGame::Instance()->getStateMachine()->changeState(new PlayState());
+	}
 }
 
 void MenuState::render() {

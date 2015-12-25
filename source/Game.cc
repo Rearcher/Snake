@@ -14,7 +14,7 @@ bool Game::init(const char *title, int xpos, int ypos, int width,
             
 			if (m_pRenderer != nullptr) {
                 std::cout << "renderer creation success\n";
-			    SDL_SetRenderDrawColor(m_pRenderer, 255, 255, 255, 255);
+			    SDL_SetRenderDrawColor(m_pRenderer, 135, 206, 235, 255);
 			} else {
 				
 				std::cout << "renderer init fail\n";
@@ -31,7 +31,7 @@ bool Game::init(const char *title, int xpos, int ypos, int width,
 	
 	m_Width = width;
 	m_Height = height;
-
+	
 	std::cout << "init success\n";
 	m_bRunning = true;
 

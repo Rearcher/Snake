@@ -10,7 +10,7 @@ void GameOverState::s_gameOverToMain() {
 }
 
 void GameOverState::s_restartPlay() {
-	TheGame::Instance()->getStateMachine()->changeState(new PlayState());
+	TheGame::Instance()->getStateMachine()->popState();
 }
 
 void GameOverState::resume() {

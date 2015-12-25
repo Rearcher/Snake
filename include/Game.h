@@ -10,6 +10,8 @@
 #include "PlayState.h"
 #include "PauseState.h"
 #include "GameOverState.h"
+#include "NextLevelState.h"
+#include "ClearState.h"
 #include "Map.h"
 
 #include <iostream>

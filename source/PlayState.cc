@@ -7,6 +7,12 @@
 const std::string PlayState::s_playID = "PLAY";
 
 void PlayState::update() {
+	if (m_initFlag) {
+		TheGame::Instance()->getStateMachine()->pushState(
+				new NextLevelState(m_levelFiles[m_currentLevel]));
+		m_initFlag = false;
+	}
+
 	if (TheInputHandler::Instance()->isKeyDown(SDL_SCANCODE_ESCAPE)) {
 		TheGame::Instance()->getStateMachine()->pushState(new PauseState());
 	}
@@ -29,6 +35,16 @@ void PlayState::update() {
 	if (checkBorderCollision(dynamic_cast<SDLGameObject*>(m_head)) ||
 			checkBodyCollision()) {
 		TheGame::Instance()->getStateMachine()->pushState(new GameOverState());
+
+		delete m_head;
+		m_head = new Snake();
+		m_head->load(new LoaderParams(100, 100, body_size, body_size, "snake", 1));
+		m_body.clear();
+		
+		Snake::cleanTurnPoints();
+
+		produceFood();
+		foodTime = SDL_GetTicks();
 	}
 	// m_food update
 	if (SDL_GetTicks() - foodTime > 15000) {
@@ -38,6 +54,31 @@ void PlayState::update() {
 	m_food->update();
 	
 	m_map->update();
+
+	// to new level
+	if (m_body.size() >= m_nextThreshold[m_currentLevel]) {
+		
+		m_currentLevel++;
+		if (m_currentLevel >= m_mapFiles.size()) {
+			TheGame::Instance()->getStateMachine()->changeState(new ClearState());
+			return;
+		}
+		
+		TheGame::Instance()->getStateMachine()->pushState(
+				new NextLevelState(m_levelFiles[m_currentLevel]));
+
+		delete m_head;
+		m_head = new Snake();
+		m_head->load(new LoaderParams(100, 100, body_size, body_size, "snake", 1));
+		m_body.clear();
+	
+		delete m_map;
+		m_map = new Map(m_mapFiles[m_currentLevel]);
+		if (!m_map->load("assets/blocks1.png", "block"))
+			std::cout << "map load failed\n";
+
+		Snake::cleanTurnPoints();
+	}
 }
 
 void PlayState::render() {
@@ -66,11 +107,17 @@ bool PlayState::onEnter() {
 		return false;
 	}
 	
+	if (!TheTextureManager::Instance()->load("assets/level1.png",
+				"level1", TheGame::Instance()->getRenderer())) {
+		std::cerr << "open assets/level1.png failed\n";
+		return false;
+	}
+
 	Snake::cleanTurnPoints();
-	
-	Snake *snake = new Snake();
-	snake->load(new LoaderParams(100, 100, body_size, body_size, "snake", 1));
-	m_head = snake;
+	m_initFlag = true;
+
+	m_head = new Snake();
+	m_head->load(new LoaderParams(100, 100, body_size, body_size, "snake", 1));
 	
 	// add body
 	Snake *body1 = new Snake(), *body2 = new Snake, *body3 = new Snake;
@@ -82,13 +129,20 @@ bool PlayState::onEnter() {
 //	m_body.push_back(body3);
 
 	// add map
-	m_map = new Map("assets/map1.txt");
+	m_mapFiles = {"assets/map0.txt", "assets/map1.txt"};
+	m_levelFiles = {"assets/level1.png", "assets/level2.png"};
+	m_currentLevel = 0;
+
+	m_map = new Map(m_mapFiles[m_currentLevel]);
 	if (!m_map->load("assets/blocks1.png", "block"))
 		std::cout << "map load failed\n";
 
 	if (m_body.size() > 0)
 		Snake::setBodyFlag(true);
 	
+	// add level threshold
+	m_nextThreshold = {5, 5};
+
 	// add food
 //	Food *food = new Food();
 //	food->load(new LoaderParams(200, 200, food_size, food_size, "food", 1));
@@ -246,7 +300,10 @@ void PlayState::produceFood() {
 	int y = rand() % height;
 	
 	Vector2D vec(x, y);
-	while (m_map->isInside(vec) || isInsideBody(vec)) {
+	Vector2D vec2(x + food_size, y + food_size);
+
+	while (m_map->isInside(vec) || isInsideBody(vec) 
+			|| m_map->isInside(vec2) || isInsideBody(vec2)) {
 		x = rand() % width;
 		y = rand() % height;
 		vec = Vector2D(x, y);
