@@ -55,6 +55,10 @@ bool ClearState::onExit() {
 	m_background->clean();
 	m_button->clean();
 	
+	for (auto id : m_textureIDList)
+		TheTextureManager::Instance()->clearFromTextureMap(id);
+	m_textureIDList.clear();
+
 	std::cout << "exiting ClearState\n";
 	return true;
 }

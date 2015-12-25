@@ -43,8 +43,8 @@ void PlayState::update() {
 		
 		Snake::cleanTurnPoints();
 
-		produceFood();
-		foodTime = SDL_GetTicks();
+	//	produceFood();
+	//	foodTime = SDL_GetTicks();
 	}
 	// m_food update
 	if (SDL_GetTicks() - foodTime > 15000) {

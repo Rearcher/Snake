@@ -36,6 +36,11 @@ bool NextLevelState::onEnter() {
 
 bool NextLevelState::onExit() {
 	m_object->clean();
+
+	for (auto id : m_textureIDList)
+		TheTextureManager::Instance()->clearFromTextureMap(id);
+	m_textureIDList.clear();
+
 	std::cout << "exiting NextLevelState\n";
 }
 
