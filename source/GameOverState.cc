@@ -75,4 +75,7 @@ void GameOverState::render() {
 void GameOverState::update() {
 	for (auto gameObject : m_gameObjects)
 		gameObject->update();
+
+	if (TheInputHandler::Instance()->isKeyDown(SDL_SCANCODE_RETURN))
+		s_restartPlay();
 }

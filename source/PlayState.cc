@@ -38,13 +38,13 @@ void PlayState::update() {
 
 		delete m_head;
 		m_head = new Snake();
-		m_head->load(new LoaderParams(100, 100, body_size, body_size, "snake", 1));
+		m_head->load(new LoaderParams(10, 10, body_size, body_size, "snake", 1));
 		m_body.clear();
 		
 		Snake::cleanTurnPoints();
 
-	//	produceFood();
-	//	foodTime = SDL_GetTicks();
+		produceFood();
+		foodTime = SDL_GetTicks();
 	}
 	// m_food update
 	if (SDL_GetTicks() - foodTime > 15000) {
@@ -69,7 +69,7 @@ void PlayState::update() {
 
 		delete m_head;
 		m_head = new Snake();
-		m_head->load(new LoaderParams(100, 100, body_size, body_size, "snake", 1));
+		m_head->load(new LoaderParams(10, 10, body_size, body_size, "snake", 1));
 		m_body.clear();
 	
 		delete m_map;
@@ -117,7 +117,7 @@ bool PlayState::onEnter() {
 	m_initFlag = true;
 
 	m_head = new Snake();
-	m_head->load(new LoaderParams(100, 100, body_size, body_size, "snake", 1));
+	m_head->load(new LoaderParams(10, 10, body_size, body_size, "snake", 1));
 	
 	// add body
 	Snake *body1 = new Snake(), *body2 = new Snake, *body3 = new Snake;
@@ -129,8 +129,10 @@ bool PlayState::onEnter() {
 //	m_body.push_back(body3);
 
 	// add map
-	m_mapFiles = {"assets/map0.txt", "assets/map1.txt"};
-	m_levelFiles = {"assets/level1.png", "assets/level2.png"};
+	m_mapFiles = {"assets/map0.txt", "assets/map1.txt", "assets/map5.txt", 
+			"assets/map2.txt", "assets/map3.txt", "assets/map4.txt"};
+	m_levelFiles = {"assets/level1.png", "assets/level2.png", "assets/level3.png", 
+			"assets/level4.png", "assets/level5.png", "assets/level6.png"};
 	m_currentLevel = 0;
 
 	m_map = new Map(m_mapFiles[m_currentLevel]);
@@ -141,7 +143,7 @@ bool PlayState::onEnter() {
 		Snake::setBodyFlag(true);
 	
 	// add level threshold
-	m_nextThreshold = {5, 5};
+	m_nextThreshold = {1, 1, 1, 1, 1, 1};
 
 	// add food
 //	Food *food = new Food();
@@ -302,8 +304,7 @@ void PlayState::produceFood() {
 	Vector2D vec(x, y);
 	Vector2D vec2(x + food_size, y + food_size);
 
-	while (m_map->isInside(vec) || isInsideBody(vec) 
-			|| m_map->isInside(vec2) || isInsideBody(vec2)) {
+	while (m_map->isInside(vec) || isInsideBody(vec)) {
 		x = rand() % width;
 		y = rand() % height;
 		vec = Vector2D(x, y);
